@@ -3,7 +3,6 @@ package pierrebtz.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pierrebtz.models.Rsvp;
-import pierrebtz.models.TokenizedRsvp;
 import pierrebtz.repositories.RsvpRepository;
 
 import java.util.stream.Collectors;
@@ -17,16 +16,25 @@ public class RsvpRestController {
     @Autowired
     private RsvpRepository repository;
 
-    @RequestMapping(path = "/rsvp/create", method = RequestMethod.POST, consumes = "application/json")
-    public String createRsvp(@RequestBody TokenizedRsvp receivedRsvp) {
-        if (!TOKEN.equals(receivedRsvp.getToken())) {
+    @RequestMapping(path = "/rsvp/create", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
+    public String createRsvp(String token,
+                             String firstName,
+                             String lastName,
+                             String email,
+                             boolean present,
+                             int adultCount,
+                             int childCount) {
+
+        if (!TOKEN.equals(token)) {
             return "Token not correct";
         }
         Rsvp rsvp = new Rsvp.Builder()
-                .firstName(receivedRsvp.getPrimaryAdult().getFirstName())
-                .lastName(receivedRsvp.getPrimaryAdult().getLastName())
-                .email(receivedRsvp.getPrimaryAdult().getEmail())
-                .present(receivedRsvp.isPresent())
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email)
+                .present(present)
+                .adultCount(adultCount)
+                .childCount(childCount)
                 .build();
         repository.save(rsvp);
         return "Successfully created rsvp with id " + rsvp.getId();

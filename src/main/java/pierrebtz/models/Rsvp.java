@@ -11,28 +11,40 @@ public class Rsvp {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private Adult primaryAdult;
+    private Person person;
     private boolean present;
+    private int adultCount;
+    private int childCount;
 
     protected Rsvp() {
         // used by JPA
     }
 
-    private Rsvp(Adult primaryAdult, boolean present) {
-        this.primaryAdult = primaryAdult;
+    private Rsvp(Person person, boolean present, int adultCount, int childCount) {
+        this.person = person;
         this.present = present;
+        this.adultCount = adultCount;
+        this.childCount = childCount;
     }
 
     public Long getId() {
         return id;
     }
 
-    public Adult getPrimaryAdult() {
-        return primaryAdult;
+    public Person getPerson() {
+        return person;
     }
 
     public boolean isPresent() {
         return present;
+    }
+
+    public int getAdultCount() {
+        return adultCount;
+    }
+
+    public int getChildCount() {
+        return childCount;
     }
 
     public static class Builder {
@@ -40,6 +52,8 @@ public class Rsvp {
         private String lastName;
         private String email;
         private boolean present;
+        private int adultCount;
+        private int childCount;
 
         public Builder() {
         }
@@ -64,8 +78,17 @@ public class Rsvp {
             return this;
         }
 
+        public Builder adultCount(int adultCount) {
+            this.adultCount = adultCount;
+            return this;
+        }
+        public Builder childCount(int childCount) {
+            this.childCount = childCount;
+            return this;
+        }
+
         public Rsvp build() {
-            return new Rsvp(new Adult(firstName, lastName, email), present);
+            return new Rsvp(new Person(firstName, lastName, email), present, adultCount, childCount);
         }
     }
 }
