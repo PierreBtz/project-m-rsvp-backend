@@ -1,3 +1,10 @@
 language: java
 jdk:
- - oraclejdk8
+- oraclejdk8
+deploy:
+  provider: heroku
+  api_key:
+    secure: O8AXD/j/tdKgIXlovSzShleq9OKawEd2sTBOAY+EdFVHDTDMvSLR7TuAUNFc416Ic60bCJg8WoC/ssk521F73zxKogw0948+H4kYLfhMz4/dL1tWzHOhF7+TjYAa17EemDPo1ColdVCEXdyqZiogY8qjoZy9V0gH+ZHEjTkboU2R2t3JMxKhfYLWwsKdQXel//SfvqMWAcC5cgsJaEX99cI3fiWadPjmu13UL+CotqFtUvKhFa/eEKJXN5BKJzH2ZzBBdsmNJOiTwXHsF6jgD3foSRhwn+PvC3zQKeuf4Np8MbTIRnEAVV22u9HZFoH4IrRE/tnmBjcmFcS2fbBABC7kxZ06Pt4n/1ZNDZmTDTi5XJZgHDseqzHZiGS5ousNh8HT/D90m3VIRNda6Z9e/TeiiCIeV6kKLifO3xkmy2ZbFlbZINASRLgArcCvPAkHofDNOe8ZmK2DnADFNNMdyndvXTrpTgj3v8iDKL0AoQqTM52vtDY1G3VgUbrWO9ozLnI5bnt8UJ1TswDLvcmxfBe8BxP4ZChm5afCTNfQZQTjOMTQa70Lrc4q88a+Pue3kTFBC8URQQ6ihY87Vv6LkNEniKvgl2i0OlrRlHR0CBt8NH4hueT8qMhDI3nSseyQNH/poEszW1faU0XgMEMN0meQqSQaU5d3+1fgPNVvBv0=
+  app: project-m-backend-deployment
+  on:
+    repo: PierreBtz/project-m-rsvp-backend
