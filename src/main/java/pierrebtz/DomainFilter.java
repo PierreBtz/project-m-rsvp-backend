@@ -22,7 +22,7 @@ public class DomainFilter extends OncePerRequestFilter {
         if(isValidDomain(domain)){
             filterChain.doFilter(request, response);
         } else {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, domain + " is not authorized to access this resource");
         }
     }
 
