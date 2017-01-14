@@ -1,6 +1,7 @@
 package pierrebtz;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -9,29 +10,27 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.InetAddress;
 
+@Profile("!dev")
 @Component
 public class DomainFilter extends OncePerRequestFilter {
-    @Value("${frontend.domain.name}")
-    private String frontEndDomain;
+    @Value("${frontend.origin}")
+    private String frontendOrigin;
+    @Value("${frontend.referrer}")
+    private String frontendReferrer;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String remoteAddress = request.getRemoteAddr();
-
-        InetAddress address = InetAddress.getByName(remoteAddress);
-        String hostname = address.getHostName();
-
-        if(isValidDomain(hostname)){
+        if(isValidDomain(request.getHeader("origin"), request.getHeader("referer"))){
             filterChain.doFilter(request, response);
         } else {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, hostname + " is not authorized to access this resource");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "You are not authorized to access this resource");
         }
     }
 
-    private boolean isValidDomain(String domain){
-        return frontEndDomain.equals(domain);
+    // This can easily be spoofed, but idea here is not to make something secure (no authentication).
+    private boolean isValidDomain(String origin, String referrer){
+        return frontendOrigin.equals(origin) && frontendReferrer.equals(referrer);
     }
 
 }
