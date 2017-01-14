@@ -17,7 +17,7 @@ public class DomainFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String domain = request.getServerName();
+        String domain = request.getRemoteHost();
 
         if(isValidDomain(domain)){
             filterChain.doFilter(request, response);
