@@ -8,6 +8,7 @@ import pierrebtz.repositories.RsvpRepository;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@RequestMapping(path = "/api/rsvp")
 @RestController
 @ResponseBody
 public class RsvpRestController {
@@ -16,7 +17,7 @@ public class RsvpRestController {
     @Autowired
     private RsvpRepository repository;
 
-    @RequestMapping(path = "/rsvp/create", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
+    @RequestMapping(path = "/create", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
     public String createRsvp(String token,
                              String firstName,
                              String lastName,
@@ -40,19 +41,19 @@ public class RsvpRestController {
         return "Successfully created rsvp with id " + rsvp.getId();
     }
 
-    @RequestMapping("/rsvp/report/all")
+    @RequestMapping("/report/all")
     public @ResponseBody Iterable<Rsvp> getReport() {
         return repository.findAll();
     }
 
-    @RequestMapping("/rsvp/report/present")
+    @RequestMapping("/report/present")
     public @ResponseBody Iterable<Rsvp> getPresent() {
         return StreamSupport.stream(repository.findAll().spliterator(), false)
                 .filter(Rsvp::isPresent)
                 .collect(Collectors.toList());
     }
 
-    @RequestMapping("/rsvp/report/absent")
+    @RequestMapping("/report/absent")
     public @ResponseBody Iterable<Rsvp> getAbsent() {
         return StreamSupport.stream(repository.findAll().spliterator(), false)
                 .filter(rsvp -> !rsvp.isPresent())
