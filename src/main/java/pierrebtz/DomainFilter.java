@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.InetAddress;
 
 @Component
 public class DomainFilter extends OncePerRequestFilter {
@@ -17,12 +18,15 @@ public class DomainFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String domain = request.getRemoteHost();
+        String remoteAddress = request.getRemoteAddr();
 
-        if(isValidDomain(domain)){
+        InetAddress address = InetAddress.getByName(remoteAddress);
+        String hostname = address.getHostName();
+
+        if(isValidDomain(hostname)){
             filterChain.doFilter(request, response);
         } else {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, domain + " is not authorized to access this resource");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, hostname + " is not authorized to access this resource");
         }
     }
 
