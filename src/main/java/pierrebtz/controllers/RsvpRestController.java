@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import pierrebtz.models.Rsvp;
 import pierrebtz.repositories.RsvpRepository;
 
+import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -13,6 +14,7 @@ import java.util.stream.StreamSupport;
 @ResponseBody
 public class RsvpRestController {
     private static final String TOKEN = "0000";
+    private static final String ADMIN_TOKEN = "1111";
 
     @Autowired
     private RsvpRepository repository;
@@ -47,14 +49,20 @@ public class RsvpRestController {
     }
 
     @RequestMapping("/report/present")
-    public @ResponseBody Iterable<Rsvp> getPresent() {
+    public @ResponseBody Iterable<Rsvp> getPresent(@RequestParam("token") String token) {
+        if (!ADMIN_TOKEN.equals(token)) {
+            return Collections.emptyList();
+        }
         return StreamSupport.stream(repository.findAll().spliterator(), false)
                 .filter(Rsvp::isPresent)
                 .collect(Collectors.toList());
     }
 
     @RequestMapping("/report/absent")
-    public @ResponseBody Iterable<Rsvp> getAbsent() {
+    public @ResponseBody Iterable<Rsvp> getAbsent(@RequestParam("token") String token) {
+        if (!ADMIN_TOKEN.equals(token)) {
+            return Collections.emptyList();
+        }
         return StreamSupport.stream(repository.findAll().spliterator(), false)
                 .filter(rsvp -> !rsvp.isPresent())
                 .collect(Collectors.toList());
