@@ -24,7 +24,7 @@ public class DomainFilter extends OncePerRequestFilter {
         if(isValidDomain(request.getHeader("origin"), request.getHeader("referer"))){
             filterChain.doFilter(request, response);
         } else {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "You are not authorized to access this resource");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "You are not authorized to access this resource: " + request.getHeader("origin") + "," + request.getHeader("referer"));
         }
     }
 
