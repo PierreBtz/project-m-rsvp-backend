@@ -30,7 +30,8 @@ public class DomainFilter extends OncePerRequestFilter {
 
     // This can easily be spoofed, but idea here is not to make something secure (no authentication).
     private boolean isValidDomain(String origin, String referrer){
-        return frontendOrigin.equals(origin) && frontendReferrer.equals(referrer);
+        return origin != null && origin.startsWith(frontendOrigin)
+                && referrer != null && referrer.startsWith(frontendReferrer);
     }
 
 }
