@@ -43,11 +43,6 @@ public class RsvpRestController {
         return "Successfully created rsvp with id " + rsvp.getId();
     }
 
-    @RequestMapping("/report/all")
-    public @ResponseBody Iterable<Rsvp> getReport() {
-        return repository.findAll();
-    }
-
     @RequestMapping("/report/present")
     public @ResponseBody Iterable<Rsvp> getPresent(@RequestParam("token") String token) {
         if (!ADMIN_TOKEN.equals(token)) {
