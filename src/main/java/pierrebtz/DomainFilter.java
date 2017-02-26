@@ -14,24 +14,21 @@ import java.io.IOException;
 @Profile("!dev")
 @Component
 public class DomainFilter extends OncePerRequestFilter {
-    @Value("${frontend.origin}")
-    private String frontendOrigin;
     @Value("${frontend.referrer}")
     private String frontendReferrer;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if(isValidDomain(request.getHeader("origin"), request.getHeader("referer"))){
+        if(isValidDomain(request.getHeader("referer"))){
             filterChain.doFilter(request, response);
         } else {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "You are not authorized to access this resource: " + request.getHeader("origin") + "," + request.getHeader("referer"));
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "You are not authorized to access this resource: " + request.getHeader("referer"));
         }
     }
 
     // This can easily be spoofed, but idea here is not to make something secure (no authentication).
-    private boolean isValidDomain(String origin, String referrer){
-        return origin != null && origin.startsWith(frontendOrigin)
-                && referrer != null && referrer.startsWith(frontendReferrer);
+    private boolean isValidDomain(String referrer){
+        return referrer != null && referrer.startsWith(frontendReferrer);
     }
 
 }
