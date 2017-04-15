@@ -1,7 +1,12 @@
 package pierrebtz.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import pierrebtz.models.Rsvp;
 import pierrebtz.repositories.RsvpRepository;
 
@@ -13,8 +18,10 @@ import java.util.stream.StreamSupport;
 @RestController
 @ResponseBody
 public class RsvpRestController {
-    private static final String TOKEN = "0000";
-    private static final String ADMIN_TOKEN = "1111";
+    @Value("${app.token}")
+    private String appToken;
+    @Value("${app.admin.token}")
+    private String adminToken;
 
     @Autowired
     private RsvpRepository repository;
@@ -28,7 +35,7 @@ public class RsvpRestController {
                              int adultCount,
                              int childCount) {
 
-        if (!TOKEN.equals(token)) {
+        if (!appToken.equals(token)) {
             return "Token not correct";
         }
         Rsvp rsvp = new Rsvp.Builder()
@@ -45,7 +52,7 @@ public class RsvpRestController {
 
     @RequestMapping("/report/present")
     public @ResponseBody Iterable<Rsvp> getPresent(@RequestParam("token") String token) {
-        if (!ADMIN_TOKEN.equals(token)) {
+        if (!adminToken.equals(token)) {
             return Collections.emptyList();
         }
         return StreamSupport.stream(repository.findAll().spliterator(), false)
@@ -55,7 +62,7 @@ public class RsvpRestController {
 
     @RequestMapping("/report/absent")
     public @ResponseBody Iterable<Rsvp> getAbsent(@RequestParam("token") String token) {
-        if (!ADMIN_TOKEN.equals(token)) {
+        if (!adminToken.equals(token)) {
             return Collections.emptyList();
         }
         return StreamSupport.stream(repository.findAll().spliterator(), false)
