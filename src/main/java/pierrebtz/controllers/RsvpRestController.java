@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import pierrebtz.NotificationService;
 import pierrebtz.models.Rsvp;
 import pierrebtz.repositories.RsvpRepository;
 
@@ -29,6 +30,8 @@ public class RsvpRestController {
 
     @Autowired
     private RsvpRepository repository;
+    @Autowired
+    private NotificationService notification;
 
     @RequestMapping(path = "/create", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
     public String createRsvp(String token,
@@ -42,6 +45,10 @@ public class RsvpRestController {
         if (!appToken.equals(token)) {
             throw new IllegalStateException("Token is not correct");
         }
+
+        // sending the notification before saving in base in case something is wrong we can always double check with the person
+        notification.send(firstName, lastName, email, present, adultCount, childCount);
+
         Rsvp rsvp = new Rsvp.Builder()
                 .firstName(firstName)
                 .lastName(lastName)
@@ -50,6 +57,7 @@ public class RsvpRestController {
                 .adultCount(adultCount)
                 .childCount(childCount)
                 .build();
+
         repository.save(rsvp);
         return "Successfully created rsvp with id " + rsvp.getId();
     }
