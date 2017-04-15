@@ -5,7 +5,6 @@ import com.sendgrid.Email;
 import com.sendgrid.Mail;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
-import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,7 @@ public class EmailNotification implements NotificationService {
                      int adultCount,
                      int childCount) {
         Email emailFrom = new Email(from);
-        String subject = "[RSVP] Nouvelle Inscription";
+        String subject = generateSubject(firstName, lastName);
         Email emailTo = new Email(to);
         Content content = new Content("text/plain",
                 generateEmailBody(firstName, lastName, email, present, adultCount, childCount));
@@ -42,14 +41,15 @@ public class EmailNotification implements NotificationService {
             request.method = Method.POST;
             request.endpoint = "mail/send";
             request.body = mail.build();
-            Response response = sg.api(request);
-            System.out.println(response.statusCode);
-            System.out.println(response.body);
-            System.out.println(response.headers);
+            sg.api(request);
         } catch (IOException ex) {
             // for now let's just dump the exception in heroku console
             System.out.println(ex.getMessage());
         }
+    }
+
+    private static String generateSubject(String firstName, String lastName) {
+        return "[Mariage RSVP]" + firstName + " " + lastName + " vient de s'inscrire!";
     }
 
     private static String generateEmailBody(String firstName, String lastName, String email, boolean present, int adultCount, int childCount) {
