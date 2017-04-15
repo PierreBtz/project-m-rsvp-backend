@@ -2,6 +2,8 @@ package pierrebtz.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import pierrebtz.models.Rsvp;
 import pierrebtz.repositories.RsvpRepository;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -36,7 +40,7 @@ public class RsvpRestController {
                              int childCount) {
 
         if (!appToken.equals(token)) {
-            return "Token not correct";
+            throw new IllegalStateException("Token is not correct");
         }
         Rsvp rsvp = new Rsvp.Builder()
                 .firstName(firstName)
@@ -51,7 +55,8 @@ public class RsvpRestController {
     }
 
     @RequestMapping("/report/present")
-    public @ResponseBody Iterable<Rsvp> getPresent(@RequestParam("token") String token) {
+    public @ResponseBody
+    Iterable<Rsvp> getPresent(@RequestParam("token") String token) {
         if (!adminToken.equals(token)) {
             return Collections.emptyList();
         }
@@ -61,12 +66,18 @@ public class RsvpRestController {
     }
 
     @RequestMapping("/report/absent")
-    public @ResponseBody Iterable<Rsvp> getAbsent(@RequestParam("token") String token) {
+    public @ResponseBody
+    Iterable<Rsvp> getAbsent(@RequestParam("token") String token) {
         if (!adminToken.equals(token)) {
             return Collections.emptyList();
         }
         return StreamSupport.stream(repository.findAll().spliterator(), false)
                 .filter(rsvp -> !rsvp.isPresent())
                 .collect(Collectors.toList());
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    private void handleTokenExceptions(HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.UNAUTHORIZED.value(), "Provided token is not correct");
     }
 }
