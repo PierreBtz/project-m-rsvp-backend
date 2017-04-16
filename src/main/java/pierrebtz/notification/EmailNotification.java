@@ -9,6 +9,7 @@ import com.sendgrid.SendGrid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import pierrebtz.models.Attendance;
 
 import java.io.IOException;
 
@@ -26,14 +27,14 @@ public class EmailNotification implements NotificationService {
     public void send(String firstName,
                      String lastName,
                      String email,
-                     boolean present,
+                     Attendance attendance,
                      int adultCount,
                      int childCount) {
         Email emailFrom = new Email(from);
         String subject = generateSubject(firstName, lastName);
         Email emailTo = new Email(to);
         Content content = new Content("text/plain",
-                generateEmailBody(firstName, lastName, email, present, adultCount, childCount));
+                generateEmailBody(firstName, lastName, email, attendance, adultCount, childCount));
         Mail mail = new Mail(emailFrom, subject, emailTo, content);
 
         SendGrid sg = new SendGrid(apiKey);
@@ -53,11 +54,12 @@ public class EmailNotification implements NotificationService {
         return "[Mariage RSVP]" + firstName + " " + lastName + " vient de s'inscrire!";
     }
 
-    private static String generateEmailBody(String firstName, String lastName, String email, boolean present, int adultCount, int childCount) {
+    private static String generateEmailBody(String firstName, String lastName, String email, Attendance attendance, int adultCount, int childCount) {
         return
                 firstName + " " + lastName + " (" + email + ") vient de s'inscrire! \n \n" +
-                        (present ?
-                                "Il/Elle sera présent(e): " + adultCount + " adulte(s) " + childCount + " enfant(s)." :
-                                "Il/Elle ne pourra pas être présent(e).");
+                        (attendance != Attendance.ABSENT ? "Il/Elle sera présent(e) au diner"
+                                + (attendance == Attendance.ALL ? " et au brunch" : "")
+                                + ": " + adultCount + " adulte(s) " + childCount + " enfant(s)."
+                                : "Il/Elle ne pourra pas être présent(e).");
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import pierrebtz.models.Attendance;
 import pierrebtz.notification.NotificationService;
 import pierrebtz.models.Rsvp;
 import pierrebtz.repositories.RsvpRepository;
@@ -38,7 +39,9 @@ public class RsvpRestController {
                              String firstName,
                              String lastName,
                              String email,
-                             boolean present,
+                             boolean presentDinner,
+                             boolean presentBrunch,
+                             boolean absent,
                              int adultCount,
                              int childCount) {
 
@@ -46,14 +49,20 @@ public class RsvpRestController {
             throw new IllegalStateException("Token is not correct");
         }
 
+        // this is a simple assertion as the API will be only called from a known client,
+        // and unknown caller sending incoherent data is not really important here...
+        assert !absent && presentDinner || absent && ! presentDinner && !presentBrunch;
+
+        Attendance attendance = Attendance.get(presentBrunch, absent);
+
         // sending the notification before saving in base in case something is wrong we can always double check with the person
-        notification.send(firstName, lastName, email, present, adultCount, childCount);
+        notification.send(firstName, lastName, email, attendance, adultCount, childCount);
 
         Rsvp rsvp = new Rsvp.Builder()
                 .firstName(firstName)
                 .lastName(lastName)
                 .email(email)
-                .present(present)
+                .attendance(attendance)
                 .adultCount(adultCount)
                 .childCount(childCount)
                 .build();
