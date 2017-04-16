@@ -1,4 +1,4 @@
-package pierrebtz.email;
+package pierrebtz.notification;
 
 import com.sendgrid.Content;
 import com.sendgrid.Email;
@@ -7,11 +7,12 @@ import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.SendGrid;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import pierrebtz.NotificationService;
 
 import java.io.IOException;
 
+@Profile("default")
 @Service
 public class EmailNotification implements NotificationService {
 

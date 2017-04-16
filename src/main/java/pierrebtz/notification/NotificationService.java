@@ -1,4 +1,4 @@
-package pierrebtz;
+package pierrebtz.notification;
 
 public interface NotificationService {
 
